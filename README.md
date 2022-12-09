@@ -72,6 +72,94 @@ const lsig = new algosdk.LogicSigAccount(program);
 // lsig can now be used to sign transactions
 ```
 
+## Smart Signature Logic
+
+This section explains the smart signature logic.  
+
+The smart signature TEAL code verifies that the transactions sent to the blockhain are one of 3 sets: 3 transactions constituing an offer of sale, or 3 transactions revoking the offer or 4 transactions buying the NFT for the asking price.
+
+### Offer for sale
+If the set of transactions is an offer for sale then the smart signature checks that the following are true: there must be exactly 3 transactions in the group such that:
+
+#### Transaction 1
+The escrow is not the seller account.  
+The transaction type is a payment type.  
+The escrow account is the receiver of the payment.  
+The amount of algos placed in escrow is sufficient.  
+No funds are closed to any other account.
+
+#### Transaction 2
+The transaction type is an asset transfer.  
+From the escrow to itself.  
+Exactly 0 assets. (thus opting into the asset)  
+The asset id is correct. 
+No assets are closed to any other account.
+
+#### Transaction 3
+The transaction type is an asset transfer.  
+From the sellers account to the escrow. 
+Exactly one asset.  
+The asset id is correct. 
+No assets are closed to any other account. 
+
+### Revoking offer
+If the set of transactions is the revoking of the offer for sale then the smart signature checks that the following are true: there must be exactly 3 transactions in the group such that:
+
+#### Transaction 1
+The escrow is not the seller account. 
+The transaction type is an asset transfer. 
+From the seller to the seller.  
+Exactly 0 assets. (thus opting the seller into the asset) 
+The asset id is correct. 
+No assets are closed to any other account. 
+
+#### Transaction 2
+The transaction type is an asset transfer. 
+From the escrow to the seller.  
+Exactly 1 asset. 
+The asset id is correct. 
+Assets are closed to the seller. 
+
+#### Transaction 3
+The transaction type is a payment type.  
+The escrow account is the sender of the payment.  
+The seller account is the receiver of the payment.  
+The amount of algos sent is 0 but...  
+All funds are closed to the seller (thus effecively reimburising them). 
+
+### Buying the NFT
+If the set of transactions is the acceptance of the offer for sale then the smart signature checks that the following are true: there must be exactly 4 transactions in the group such that:
+
+#### Transaction 1
+The transaction type is a payment type.  
+The buyer and seller are distinct from the escrow 
+The buyer's account is the transaction issuer 
+the buyer's account is the sender of the payment.   
+The seller account is the receiver of the payment.  
+The amount sent is the asking price. 
+No funds are closed to any other account.
+
+#### Transaction 2
+The transaction type is an asset transfer. 
+From the buyer to the buyer.  
+Of exactly 0 assets.   
+Of the correct asset id. 
+No assets are closed to any other account. 
+
+#### Transaction 3
+The transaction type is an asset transfer. 
+From the escrow to the buyer.  
+Of exactly 1 assets.   
+Of the correct asset id. 
+Assets are closed to the buyer.
+
+#### Transaction 4
+The transaction type is a payment type.  
+The escrow account is the sender of the payment.  
+The seller account is the receiver of the payment.  
+The amount of algos sent is 0 but...  
+All funds are closed to the seller (thus effecively reimburising them). 
+
 ## Connecting a MyAlgo wallet
 
 Assuming you have a connected MyAlgo wallet object (https://github.com/randlabs/myalgo-connect#Documentation) you can create and sign transactions required to invoke the smart signature to offer an NFT for sale:
@@ -277,91 +365,3 @@ console.log("Transaction " + tx.txId + " confirmed in round " + confirmedTxn["co
 ```
 
 You have now exercised all 3 operations accepted by the smart signature.
-
-## Smart Signature Logic
-
-This section explains the smart signature logic.  
-
-The smart signature TEAL code verifies that the transactions sent to the blockhain are one of 3 sets: 3 transactions constituing an offer of sale, or 3 transactions revoking the offer or 4 transactions buying the NFT for the asking price.
-
-### Offer for sale
-If the set of transactions is an offer for sale then the smart signature checks that the following are true: there must be exactly 3 transactions in the group such that:
-
-#### Transaction 1
-The escrow is not the seller account.  
-The transaction type is a payment type.  
-The escrow account is the receiver of the payment.  
-The amount of algos placed in escrow is sufficient.  
-No funds are closed to any other account.
-
-#### Transaction 2
-The transaction type is an asset transfer.  
-From the escrow to itself.  
-Exactly 0 assets. (thus opting into the asset)  
-The asset id is correct. 
-No assets are closed to any other account.
-
-#### Transaction 3
-The transaction type is an asset transfer.  
-From the sellers account to the escrow. 
-Exactly one asset.  
-The asset id is correct. 
-No assets are closed to any other account. 
-
-### Revoking offer
-If the set of transactions is the revoking of the offer for sale then the smart signature checks that the following are true: there must be exactly 3 transactions in the group such that:
-
-#### Transaction 1
-The escrow is not the seller account. 
-The transaction type is an asset transfer. 
-From the seller to the seller.  
-Exactly 0 assets. (thus opting the seller into the asset) 
-The asset id is correct. 
-No assets are closed to any other account. 
-
-#### Transaction 2
-The transaction type is an asset transfer. 
-From the escrow to the seller.  
-Exactly 1 asset. 
-The asset id is correct. 
-Assets are closed to the seller. 
-
-#### Transaction 3
-The transaction type is a payment type.  
-The escrow account is the sender of the payment.  
-The seller account is the receiver of the payment.  
-The amount of algos sent is 0 but...  
-All funds are closed to the seller (thus effecively reimburising them). 
-
-### Buying the NFT
-If the set of transactions is the acceptance of the offer for sale then the smart signature checks that the following are true: there must be exactly 4 transactions in the group such that:
-
-#### Transaction 1
-The transaction type is a payment type.  
-The buyer and seller are distinct from the escrow 
-The buyer's account is the transaction issuer 
-the buyer's account is the sender of the payment.   
-The seller account is the receiver of the payment.  
-The amount sent is the asking price. 
-No funds are closed to any other account.
-
-#### Transaction 2
-The transaction type is an asset transfer. 
-From the buyer to the buyer.  
-Of exactly 0 assets.   
-Of the correct asset id. 
-No assets are closed to any other account. 
-
-#### Transaction 3
-The transaction type is an asset transfer. 
-From the escrow to the buyer.  
-Of exactly 1 assets.   
-Of the correct asset id. 
-Assets are closed to the buyer.
-
-#### Transaction 4
-The transaction type is a payment type.  
-The escrow account is the sender of the payment.  
-The seller account is the receiver of the payment.  
-The amount of algos sent is 0 but...  
-All funds are closed to the seller (thus effecively reimburising them). 
