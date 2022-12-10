@@ -250,7 +250,7 @@ let confirmedTxn = await algosdk.waitForConfirmation(algod_client, tx.txId, 4);
 console.log("Transaction " + tx.txId + " confirmed in round " + confirmedTxn["confirmed-round"]);
 ```
  
- ## revoking an NFT sale offer
+ ## Revoking an NFT sale offer
  
  To undo/revoke the offer of sale (before anyone buys it) you need 3 transactions: one opting the seller into the asset, one passing the asset from the escrow back to the seller and one refunding the seller any holding algos placed in the escrow.
  
