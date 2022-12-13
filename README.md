@@ -32,7 +32,7 @@ After signing the transactions the smart contract executes and examines all the 
 Note that the smart contract generates a different escrow for each combination of seller, asking price, and nft-id.
 
 # Smart Contract
-Algorand Smart Contracts (ASC1) provides both smart contracts and smart signatures. Please refer to Algorand's documentation (https://developer.algorand.org/docs/) for detailed information on interacting with smart contracts and issuing transactions to the blockchain. This tutorial is for guidance on using the smart signatures described above and doesn't go into detail on the mechanics of the Algorand SDKs or APIs.  
+Algorand Smart Contract (ASC1) provides both smart contracts and smart signatures. Please refer to Algorand's documentation (https://developer.algorand.org/docs/) for detailed information on interacting with smart contracts and issuing transactions to the blockchain. This tutorial is for guidance on using the smart signatures described below and doesn't go into detail on the mechanics of the Algorand SDKs or APIs.  
 
 You may refer to `\src\Utils\wallet-signed-offer-sell-nft.js` which includes the code outlined below and is used by the Hello World test app to effectuate all blockchain code, this can be used directly in your own projects if required.
 
